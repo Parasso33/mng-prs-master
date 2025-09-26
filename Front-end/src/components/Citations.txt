@@ -1,0 +1,543 @@
+# Code Citations
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+           
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            )
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) :
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+             
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/200
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg"
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" class
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5"
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none"
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" view
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24"
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="current
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke
+```
+
+
+## License: unknown
+https://github.com/sefhirothxd/metroLaureate/blob/59cb9410fa0b4c167cd20dd756efe76b6928ccf4/src/components/Mensaje.jsx
+
+```
+</svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth
+```
+

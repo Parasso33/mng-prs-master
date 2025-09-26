@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Manga Theme - Light Mode */
+    --background: 0 0% 100%;
+    --foreground: 210 11% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 11% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 11% 15%;
+
+    --primary: 15 100% 60%;
+    --primary-foreground: 15 100% 45%;
+
+    --secondary: 0 0% 97%;
+    --secondary-foreground: 210 11% 15%;
+
+    --muted: 0 0% 97%;
+    --muted-foreground: 215 14% 50%;
+
+    --accent: 15 100% 60%;
+    --accent-foreground: 15 100% 45%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 15 100% 45%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 15 100% 60%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 15 100% 45%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 15 100% 45%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom Light Mode Variables */
+    --hero-gradient: linear-gradient(135deg, hsl(15 100% 60%), hsl(15 100% 55%));
+    --card-shadow: 0 4px 15px hsl(210 11% 4% / 0.15);
+    --card-shadow-dark: 0 4px 15px hsl(210 11% 4% / 0.3);
+    --manga-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --overlay-gradient: linear-gradient(to bottom, transparent, hsl(210 11% 4% / 0.8));
+  }
+
+  .dark {
+    /* Manga Theme - Dark Mode */
+    --background: 210 11% 10%;
+    --foreground: 0 0% 100%;
+
+    --card: 210 11% 18%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 210 11% 18%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 15 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 11% 18%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 11% 18%;
+    --muted-foreground: 220 5% 69%;
+
+    --accent: 15 100% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 11% 29%;
+    --input: 210 11% 29%;
+    --ring: 15 100% 60%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom Manga Theme Variables */
+    --hero-gradient: linear-gradient(135deg, hsl(15 100% 60%), hsl(15 100% 55%));
+    --card-shadow: 0 4px 15px hsl(210 11% 4% / 0.15);
+    --card-shadow-dark: 0 4px 15px hsl(210 11% 4% / 0.3);
+    --manga-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --overlay-gradient: linear-gradient(to bottom, transparent, hsl(210 11% 4% / 0.8));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-family: 'Arial', 'Segoe UI', 'Tahoma', sans-serif;
+  }
+
+  html[dir="rtl"] {
+    direction: rtl;
+  }
+
+  html[dir="ltr"] {
+    direction: ltr;
+  }
+}
+
+/* Set site-wide font to Comic Relief (with Almarai as fallback) */
+:root {
+  --site-font: "Comic Relief", "Almarai", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--site-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Optionally make headings use the same font (or a different one if you prefer) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--site-font);
+}
+
+@layer components {
+  .manga-card {
+    @apply bg-card rounded-lg overflow-hidden shadow-[var(--card-shadow)] 
+           transition-[var(--manga-transition)] cursor-pointer relative
+           hover:shadow-[var(--card-shadow-dark)] hover:-translate-y-1;
+  }
+  
+  .dark .manga-card {
+    @apply shadow-[var(--card-shadow-dark)];
+  }
+
+  .hero-gradient {
+    background: var(--hero-gradient);
+  }
+
+  .overlay-gradient {
+    background: var(--overlay-gradient);
+  }
+
+  .manga-transition {
+    transition: var(--manga-transition);
+  }
+
+  .search-glass {
+    @apply backdrop-blur-md bg-white/10 border-white/20;
+  }
+
+  .dark .search-glass {
+    @apply bg-black/20;
+  }
+}
