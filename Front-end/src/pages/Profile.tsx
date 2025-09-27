@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Bookmark, Clock, Settings, User as UserIcon, Plus } from 'lucide-react';
 import MangaCard from '@/components/MangaCard';
-import { mangaData } from '@/data/manga';
+// import { mangaData } from '@/data/manga';
 import type { Manga } from '@/types/manga';
 import type { HistoryItem } from '@/types/manga';
 import FavButton from '@/components/ui/FavButton';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 
 const STORAGE_KEY = 'mp_user';
@@ -79,23 +80,85 @@ const Profile: React.FC = () => {
     return () => window.removeEventListener('mp:favs:changed', handler as EventListener);
   }, [loadFavs, loadUser]);
 
- const [allMangas, setAllMangas] = useState<Manga[]>([]);
-const [favMangas, setFavMangas] = useState<Manga[]>([]);
+ const [favMangas, setFavMangas] = useState<Manga[]>([]);
+ const [favLoading, setFavLoading] = useState<boolean>(false);
 
-useEffect(() => {
-  // اجمع المانغا من static + Home API
-  setAllMangas(Object.values(mangaData) as Manga[]);
+ // Fetch favorite manga details from MangaDex using stored IDs
+ useEffect(() => {
+  const fetchFavs = async () => {
+    try {
+      const ids = readFavIds();
+      if (!ids || ids.length === 0) {
+        setFavMangas([]);
+        return;
+      }
+      setFavLoading(true);
 
-  // إذا عندك fetch API سابق فـ Home، ممكن تمررها ل Profile
-}, []);
+      // MangaDex supports ids[] query (batch up to ~100). Chunk if needed.
+      const chunkSize = 50;
+      const chunks: string[][] = [];
+      for (let i = 0; i < ids.length; i += chunkSize) {
+        chunks.push(ids.slice(i, i + chunkSize));
+      }
 
-useEffect(() => {
-  const favs = readFavIds();
-  const favsFound = favs
-    .map((id) => allMangas.find((m) => m.id === id))
-    .filter(Boolean) as Manga[];
-  setFavMangas(favsFound);
-}, [allMangas, favIds]);
+      const results: Manga[] = [];
+      for (const batch of chunks) {
+        const params = new URLSearchParams();
+        for (const id of batch) params.append('ids[]', id);
+        params.append('limit', String(batch.length));
+        params.append('includes[]', 'cover_art');
+        params.append('includes[]', 'author');
+
+        const res = await fetch(`https://api.mangadex.org/manga?${params.toString()}`);
+        const json = await res.json();
+        const mapped: Manga[] = (json?.data || []).map((m: any) => {
+          const title = m.attributes.title?.en || Object.values(m.attributes.title || {})[0] || 'Untitled';
+          const rating = m.attributes.rating?.bayesian || '0';
+          const statusAttr = (m.attributes.status || '').toLowerCase();
+          const status: Manga['status'] = statusAttr === 'completed' ? 'Completed' : statusAttr === 'ongoing' ? 'Ongoing' : 'متوقف';
+          const coverRel = m.relationships?.find((r: any) => r.type === 'cover_art');
+          const coverUrl = coverRel ? `https://uploads.mangadex.org/covers/${m.id}/${coverRel.attributes.fileName}.256.jpg` : '';
+          const authorRel = m.relationships?.find((r: any) => r.type === 'author');
+          const authors = authorRel?.attributes?.name || 'Unknown';
+          const lang = (m.attributes.originalLanguage || '').toLowerCase();
+          const type: Manga['type'] = lang === 'ko' ? 'manhwa' : (lang === 'zh' || lang === 'zh-hk' || lang === 'zh-hant' || lang === 'zh-hans') ? 'manhua' : 'manga';
+          const categories: string[] = (m.attributes.tags || []).map((t: any) => t.attributes?.name?.en || Object.values(t.attributes?.name || {})[0]).filter(Boolean);
+
+          return {
+            id: m.id,
+            title,
+            titleEn: title,
+            authors,
+            artists: [],
+            status,
+            categories,
+            rating,
+            description: m.attributes.description?.en || Object.values(m.attributes.description || {})[0] || '',
+            cover: coverUrl,
+            chapters: [],
+            url: `https://mangadex.org/title/${m.id}`,
+            type,
+          };
+        });
+        results.push(...mapped);
+      }
+
+      // Preserve the order of favIds
+      const order = new Map<string, number>();
+      favIds.forEach((id, idx) => order.set(id, idx));
+      results.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+
+      setFavMangas(results);
+    } catch (e) {
+      console.warn('Failed to load favorite manga details', e);
+      setFavMangas([]);
+    } finally {
+      setFavLoading(false);
+    }
+  };
+
+  fetchFavs();
+ }, [favIds]);
 
 
 
@@ -180,20 +243,23 @@ const clearHistory = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'fav':
+        if (favLoading) {
+          return <LoadingSpinner message="جاري تحميل المفضلة..." />;
+        }
         return favMangas.length === 0 ? (
           <div className="p-6 bg-white/80 dark:bg-gray-800/75 rounded text-sm text-muted-foreground">
             لا توجد عناصر في المفضلة. اضغط على القلب في أي بطاقة لإضافتها.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-           {favMangas.map((m) => (
-  <div key={m.id} className="relative">
-    <MangaCard manga={m} />
-    <div className="absolute top-3 right-3 z-20">
-      <FavButton mangaId={m.id} />
-    </div>
-  </div>
-))}
+            {favMangas.map((m) => (
+              <div key={m.id} className="relative">
+                <MangaCard manga={m} />
+                <div className="absolute top-3 right-3 z-20">
+                  <FavButton mangaId={m.id} />
+                </div>
+              </div>
+            ))}
           </div>
         );
   case 'history':

@@ -4,12 +4,14 @@ import MangaCard from '@/components/MangaCard';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Manga } from '@/types/manga';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const Browse: React.FC = () => {
   const { translation } = useApp();
   const [genreFilter, setGenreFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all'); // 'Ongoing' | 'Completed' | 'متوقف' | 'all'
+  const [typeFilter, setTypeFilter] = useState<string>('all'); // 'manga' | 'manhwa' | 'manhua' | 'all'
+  const [search, setSearch] = useState<string>('');
   const [mangas, setMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,9 +19,50 @@ const Browse: React.FC = () => {
   useEffect(() => {
     const fetchMangas = async () => {
       try {
-        const res = await fetch('/api/manga?type=list');
-        const data = await res.json();
-        setMangas(data);
+        // Fetch a list of popular mangas with covers, tags, and authors
+        const res = await fetch(
+          'https://api.mangadex.org/manga?limit=50&order[followedCount]=desc&includes[]=cover_art&includes[]=tag&includes[]=author'
+        );
+        const json = await res.json();
+
+        const mapped: Manga[] = (json?.data || []).map((m: any) => {
+          const title = m.attributes.title?.en || Object.values(m.attributes.title || {})[0] || 'Untitled';
+          const rating = m.attributes.rating?.bayesian || '0';
+          const statusAttr = (m.attributes.status || '').toLowerCase();
+          const status: Manga['status'] = statusAttr === 'completed' ? 'Completed' : statusAttr === 'ongoing' ? 'Ongoing' : 'متوقف';
+
+          const coverRel = m.relationships?.find((r: any) => r.type === 'cover_art');
+          const coverUrl = coverRel ? `https://uploads.mangadex.org/covers/${m.id}/${coverRel.attributes.fileName}.256.jpg` : '';
+
+          const authorRel = m.relationships?.find((r: any) => r.type === 'author');
+          const authors = authorRel?.attributes?.name || 'Unknown';
+
+          // Collect categories from tags (prefer genre group)
+          const tags = (m.attributes.tags || []) as any[];
+          const categories: string[] = tags.map(t => t.attributes?.name?.en || Object.values(t.attributes?.name || {})[0]).filter(Boolean);
+
+          // Infer type from originalLanguage: ko -> manhwa, zh/zh-hk -> manhua, else manga
+          const lang = (m.attributes.originalLanguage || '').toLowerCase();
+          const type: Manga['type'] = lang === 'ko' ? 'manhwa' : (lang === 'zh' || lang === 'zh-hk' || lang === 'zh-hant' || lang === 'zh-hans') ? 'manhua' : 'manga';
+
+          return {
+            id: m.id,
+            title,
+            titleEn: title,
+            authors,
+            artists: [],
+            status,
+            categories,
+            rating,
+            description: m.attributes.description?.en || Object.values(m.attributes.description || {})[0] || '',
+            cover: coverUrl,
+            chapters: [],
+            url: `https://mangadex.org/title/${m.id}`,
+            type,
+          };
+        });
+
+        setMangas(mapped);
       } catch (err) {
         console.error('Error fetching mangas:', err);
       } finally {
@@ -44,14 +87,16 @@ const Browse: React.FC = () => {
       const matchesGenre = genreFilter === 'all' || manga.categories.includes(genreFilter);
       const matchesStatus = statusFilter === 'all' || manga.status === statusFilter;
       const matchesType = typeFilter === 'all' || manga.type === typeFilter;
-      return matchesGenre && matchesStatus && matchesType;
+      const matchesSearch = !search.trim() || manga.title.toLowerCase().includes(search.trim().toLowerCase());
+      return matchesGenre && matchesStatus && matchesType && matchesSearch;
     });
-  }, [mangas, genreFilter, statusFilter, typeFilter]);
+  }, [mangas, genreFilter, statusFilter, typeFilter, search]);
 
   const clearFilters = () => {
     setGenreFilter('all');
     setStatusFilter('all');
     setTypeFilter('all');
+    setSearch('');
   };
 
   return (
@@ -62,7 +107,19 @@ const Browse: React.FC = () => {
 
       {/* Filters */}
       <div className="bg-card p-6 rounded-lg shadow-lg mb-8 animate-fade-in">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              {translation.searchPlaceholder}
+            </label>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={translation.searchPlaceholder}
+              className="w-full rounded-md border border-border bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium mb-2">
               {translation.genres}
@@ -90,8 +147,8 @@ const Browse: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{translation.allStatuses}</SelectItem>
-                <SelectItem value="مستمر">{translation.ongoing}</SelectItem>
-                <SelectItem value="مكتمل">{translation.completed}</SelectItem>
+                <SelectItem value="Ongoing">{translation.ongoing}</SelectItem>
+                <SelectItem value="Completed">{translation.completed}</SelectItem>
                 <SelectItem value="متوقف">{translation.hiatus}</SelectItem>
               </SelectContent>
             </Select>
@@ -121,7 +178,7 @@ const Browse: React.FC = () => {
 
       {/* Results */}
       {loading ? (
-        <div className="text-center py-12">جاري تحميل المانجات...</div>
+        <LoadingSpinner message={translation.loading} />
       ) : (
         <>
           <div className="mb-4">
@@ -130,7 +187,7 @@ const Browse: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 animate-slide-up">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 animate-slide-up">
             {filteredMangas.map((manga) => (
               <MangaCard key={manga.id} manga={manga} />
             ))}

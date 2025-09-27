@@ -116,7 +116,7 @@ const Home: React.FC = () => {
             <h2 className="text-2xl font-semibold mb-4" style={{ color: '#FF6633' }}>
               {translation.latestChapters || 'Latest'}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
               {mangaList.map((m) => (
                 <MangaCard key={m.id} manga={m} />
               ))}

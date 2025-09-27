@@ -16,6 +16,7 @@ const Reader: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [prevChapterId, setPrevChapterId] = useState<string | null>(null);
   const [nextChapterId, setNextChapterId] = useState<string | null>(null);
+  const [chapterNum, setChapterNum] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -148,6 +149,54 @@ const Reader: React.FC = () => {
     fetchChapterNav();
   }, [mangaId, chapterId]);
 
+  // Save reading history with title, cover, chapter number, and timestamp
+  useEffect(() => {
+    const saveHistory = async () => {
+      try {
+        if (!mangaId || !chapterId) return;
+
+        // Fetch manga details for title and cover
+        const mangaRes = await axios.get(`https://api.mangadex.org/manga/${mangaId}`, {
+          params: { 'includes[]': 'cover_art' },
+        });
+        const m = mangaRes.data?.data;
+        const title: string = m?.attributes?.title?.en || Object.values(m?.attributes?.title || {})[0] || 'Untitled';
+        const coverRel = m?.relationships?.find((r: any) => r.type === 'cover_art');
+        const cover: string = coverRel ? `https://uploads.mangadex.org/covers/${m.id}/${coverRel.attributes.fileName}.256.jpg` : '';
+
+        // Fetch chapter details to get chapter number
+        const chapRes = await axios.get(`https://api.mangadex.org/chapter/${chapterId}`);
+        const ch = chapRes.data?.data;
+        const chapterNumber = ch?.attributes?.chapter ? Number(ch.attributes.chapter) : 0;
+        setChapterNum(Number.isFinite(chapterNumber) ? chapterNumber : null);
+
+        // Read existing history and upsert this entry (dedupe by id+chapter)
+        let history: any[] = [];
+        try {
+          history = JSON.parse(localStorage.getItem('mp_history') || '[]');
+        } catch {
+          history = [];
+        }
+
+        const newItem = {
+          id: mangaId,
+          title,
+          chapter: chapterNumber,
+          cover,
+          lastRead: Date.now(),
+        };
+
+        const filtered = history.filter((h) => !(h?.id === newItem.id && h?.chapter === newItem.chapter));
+        const next = [newItem, ...filtered].slice(0, 500); // keep a reasonable cap
+        localStorage.setItem('mp_history', JSON.stringify(next));
+      } catch (e) {
+        console.warn('[Reader] Failed to record history', e);
+      }
+    };
+
+    saveHistory();
+  }, [mangaId, chapterId]);
+
   const handleNextChapter = () => {
     if (mangaId && nextChapterId && nextChapterId !== chapterId) {
       console.debug('[Reader] Navigate next', { mangaId, nextChapterId });
@@ -166,7 +215,7 @@ const Reader: React.FC = () => {
     <div key={chapterId} className="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
       {/* Reader Controls */}
       <div className="bg-card p-4 sm:p-6 rounded-lg shadow-md sm:shadow-lg mb-6 lg:mb-8 animate-fade-in">
-        <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-3 sm:gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-3 sm:gap-4">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             <Button
               variant="outline"
@@ -193,6 +242,11 @@ const Reader: React.FC = () => {
             </Button>
           </div>
         </div>
+        {chapterNum !== null && (
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            {translation.chapter} {chapterNum}
+          </div>
+        )}
       </div>
 
       {/* Chapter Pages */}

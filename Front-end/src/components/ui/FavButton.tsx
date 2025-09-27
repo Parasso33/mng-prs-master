@@ -13,7 +13,7 @@ const FavButton: React.FC<FavButtonProps> = ({ mangaId }) => {
       onClick={() => toggleFavorite(mangaId)}
       className="text-red-500 hover:scale-110 transition"
     >
-      {isFavorite(mangaId) ? "❤️" : "🤍"}
+      {isFavorite(mangaId)}
     </button>
   );
 };

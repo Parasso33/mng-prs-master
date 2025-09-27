@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '@/contexts/AppContext';
 import MangaCard from '@/components/MangaCard';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const Latest: React.FC = () => {
   const { translation } = useApp();
@@ -96,9 +97,9 @@ const Latest: React.FC = () => {
       </h1>
 
       {loading ? (
-        <p>{translation.loading || 'Loading...'}</p>
+        <LoadingSpinner message={translation.loading} />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 animate-slide-up">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 animate-slide-up">
           {mangas.map((manga: any) => (
             <MangaCard key={manga.id} manga={manga} showLatestChapter />
           ))}

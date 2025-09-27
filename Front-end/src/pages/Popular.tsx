@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import MangaCard from '@/components/MangaCard';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const Popular: React.FC = () => {
   const { translation } = useApp();
@@ -61,11 +62,9 @@ const Popular: React.FC = () => {
         {translation.popular}
       </h1>
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </div>
+        <LoadingSpinner message={translation.loading} />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
           {mangas.map((manga, index) => (
             <div key={manga.id} className="relative">
               {/* Manga Card */}
