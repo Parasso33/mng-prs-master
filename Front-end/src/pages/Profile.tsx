@@ -1,92 +1,68 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Bookmark, Clock, Settings, User as UserIcon, Plus } from 'lucide-react';
 import MangaCard from '@/components/MangaCard';
 // import { mangaData } from '@/data/manga';
 import type { Manga, HistoryItem } from '@/types/manga';
 import FavButton from '@/components/ui/FavButton';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { authService, type User } from '@/services/authService';
-import type { FavoriteItem } from '@/services/favoritesService';
-import { userStorageService } from '@/services/userStorageService';
+// Front-end only: no backend/auth imports
+import { useProfile } from '@/contexts/ProfileContext';
 
 
-// Legacy constants - will be removed after migration
+// Front-end only storage keys
 const GLOBAL_FAV_KEY = 'mp_favorites';
 const PROFILE_IMAGE_KEY = 'mp_profile_image';
+const HISTORY_KEY = 'mp_history';
+const USER_DATA_KEY = 'user_data';
 
 const Profile: React.FC = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  // Front-end only user profile
+  const [user, setUser] = useState<{ name: string; email: string }>({ name: 'ضيف', email: '' });
   const [favIds, setFavIds] = useState<string[]>([]);
-  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
-  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [activeTab, setActiveTab] = useState<'fav' | 'history' | 'reader' | 'account'>('fav');
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const { profileImage, setProfileImage } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
 
-  const loadUser = useCallback(async () => {
+  // Load user profile from localStorage (front-end only)
+  const loadUser = useCallback(() => {
     try {
-      setIsLoadingProfile(true);
-      if (authService.isAuthenticated()) {
-        // Try to get fresh user data from backend
-        try {
-          const userData = await authService.getProfile();
-          setUser(userData);
-          if (userData?.name) setNewName(userData.name);
-        } catch (error) {
-          // Fallback to stored user data if API fails
-          const storedUser = authService.getStoredUser();
-          if (storedUser) {
-            setUser(storedUser);
-            if (storedUser?.name) setNewName(storedUser.name);
-          } else {
-            setUser(null);
-          }
-        }
+      const raw = localStorage.getItem(USER_DATA_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { name?: string; email?: string };
+        const name = parsed.name || 'ضيف';
+        const email = parsed.email || '';
+        setUser({ name, email });
+        setNewName(name);
       } else {
-        setUser(null);
+        setUser({ name: 'ضيف', email: '' });
+        setNewName('ضيف');
       }
     } catch {
-      setUser(null);
-    } finally {
-      setIsLoadingProfile(false);
+      setUser({ name: 'ضيف', email: '' });
+      setNewName('ضيف');
     }
   }, []);
 
   const loadFavs = useCallback(() => {
-    const user = authService.getStoredUser();
-    const key = user && authService.isAuthenticated() 
-      ? `mp_favorites_${user.id}` 
-      : "mp_favorites_guest";
-    
     try {
-      const stored = localStorage.getItem(key);
+      const stored = localStorage.getItem(GLOBAL_FAV_KEY);
       setFavIds(stored ? JSON.parse(stored) : []);
     } catch {
       setFavIds([]);
     }
   }, []);
 
-  useEffect(() => {
-    if (userStorageService.isAvailable()) {
-      const savedImage = userStorageService.getProfileImage();
-      if (savedImage) setProfileImage(savedImage);
-    }
-  }, []);
+  // Profile image comes from ProfileContext; no local effect needed
 
   useEffect(() => {
     loadUser();
     loadFavs();
     const handler = () => loadFavs();
     window.addEventListener('mp:user:favs:changed', handler as EventListener);
-    window.addEventListener('mp:auth:changed', handler as EventListener);
     return () => {
       window.removeEventListener('mp:user:favs:changed', handler as EventListener);
-      window.removeEventListener('mp:auth:changed', handler as EventListener);
     };
   }, [loadFavs, loadUser]);
 
@@ -173,73 +149,66 @@ const Profile: React.FC = () => {
 
 
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>(() => {
-    if (userStorageService.isAvailable()) {
-      return userStorageService.getHistory();
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? (JSON.parse(raw) as HistoryItem[]) : [];
+    } catch {
+      return [];
     }
-    return [];
   });
 
-const removeHistoryItem = (mangaId: string, chapter: number) => {
-  if (userStorageService.isAvailable()) {
-    userStorageService.removeFromHistory(mangaId, chapter);
-    setHistoryItems(userStorageService.getHistory());
-  }
-};
-
-const clearHistory = () => {
-  if (userStorageService.isAvailable()) {
-    userStorageService.clearHistory();
-    setHistoryItems([]);
-  }
-};
-
-
-  const initials = user
-    ? user.name
-      .split(' ')
-      .map((s) => s[0]?.toUpperCase() ?? '')
-      .slice(0, 2)
-      .join('')
-    : '';
-
-  const handleLogout = async () => {
+  const persistHistory = (items: HistoryItem[]) => {
     try {
-      await authService.logout();
-      navigate('/login', { replace: true });
-    } catch (error) {
-      // Even if logout fails, navigate to login
-      navigate('/login', { replace: true });
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(items));
+    } catch {
+      // ignore
     }
   };
 
+  const removeHistoryItem = (mangaId: string, chapter: number) => {
+    const filtered = historyItems.filter(h => !(h.mangaId === mangaId && h.chapter === chapter));
+    setHistoryItems(filtered);
+    persistHistory(filtered);
+  };
+
+  const clearHistory = () => {
+    setHistoryItems([]);
+    persistHistory([]);
+  };
+
+
+  const initials = user.name
+    .split(' ')
+    .map((s) => s[0]?.toUpperCase() ?? '')
+    .slice(0, 2)
+    .join('');
+
+  const handleLogout = () => {
+    // Front-end only: clear local user data
+    try {
+      localStorage.removeItem(USER_DATA_KEY);
+    } catch {
+      // ignore
+    }
+    loadUser();
+  };
+
   const removeFavorite = (id: string) => {
-    const user = authService.getStoredUser();
-    const key = user && authService.isAuthenticated() 
-      ? `mp_favorites_${user.id}` 
-      : "mp_favorites_guest";
-    
     const newFavs = favIds.filter(fid => fid !== id);
-    localStorage.setItem(key, JSON.stringify(newFavs));
+    localStorage.setItem(GLOBAL_FAV_KEY, JSON.stringify(newFavs));
     setFavIds(newFavs);
-    
-    // Dispatch event to notify other components
+    // Dispatch event to notify other components (front-end only)
     window.dispatchEvent(new CustomEvent('mp:user:favs:changed', {
-      detail: { favorites: newFavs, userId: user?.id }
+      detail: { favorites: newFavs }
     }));
   };
 
   const clearFavorites = () => {
-    const user = authService.getStoredUser();
-    const key = user && authService.isAuthenticated() 
-      ? `mp_favorites_${user.id}` 
-      : "mp_favorites_guest";
-    
-    localStorage.setItem(key, JSON.stringify([]));
+    localStorage.setItem(GLOBAL_FAV_KEY, JSON.stringify([]));
     setFavIds([]);
-    
-    // Dispatch event to notify other components
+    // Dispatch event to notify other components (front-end only)
     window.dispatchEvent(new CustomEvent('mp:user:favs:changed', {
-      detail: { favorites: [], userId: user?.id }
+      detail: { favorites: [] }
     }));
   };
 
@@ -249,40 +218,26 @@ const clearHistory = () => {
       const reader = new FileReader();
       reader.onload = (ev) => {
         const result = ev.target?.result as string;
+        // Update through context so Header updates immediately
         setProfileImage(result);
-        if (userStorageService.isAvailable()) {
-          userStorageService.setProfileImage(result);
-        }
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleSaveProfile = () => {
-    if (!user) return;
     const updatedUser = { ...user, name: newName };
     setUser(updatedUser);
-    // Update the stored user data in localStorage (used by auth service)
-    localStorage.setItem('user_data', JSON.stringify(updatedUser));
+    // Store locally (front-end only)
+    try {
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(updatedUser));
+    } catch {
+      // ignore
+    }
     setIsEditing(false);
   };
 
-  if (isLoadingProfile) {
-    return <LoadingSpinner message="جاري تحميل الملف الشخصي..." />;
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-xl w-full text-center">
-          <p className="mb-6 text-lg text-muted-foreground">يرجى تسجيل الدخول للوصول للملف الشخصي.</p>
-          <Link to="/login" className="inline-block px-4 py-2 bg-primary text-white rounded">
-            تسجيل الدخول
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // Front-end only: no loading/auth gating
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -302,6 +257,13 @@ const clearHistory = () => {
                 <div className="absolute top-3 right-3 z-20">
                   <FavButton mangaId={m.id} />
                 </div>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFavorite(m.id); }}
+                  className="absolute top-3 left-3 z-20 w-6 h-6 flex items-center justify-center rounded-full bg-[#ff6633] text-white hover:bg-red-700 text-sm"
+                  title="حذف من المفضلة"
+                >
+                  ×
+                </button>
               </div>
             ))}
           </div>
@@ -516,7 +478,7 @@ const clearHistory = () => {
 
             <div>
               <h2 className="text-xl font-semibold text-[#ff6633]">{user.name}</h2>
-              <p className="text-sm text-muted-foreground break-all">{user.email}</p>
+              <p className="text-sm text-muted-foreground break-all">{user.email || '—'}</p>
             </div>
           </div>
 

@@ -109,34 +109,22 @@ const Header: React.FC = () => {
               <i className={`fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} />
             </Button>
 
-            {/* Profile */}
-            {isLoggedIn && user ? (
-              <Link to="/profile">
-                <div className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center hover:opacity-80 transition">
-                  {profileImage ? (
-                    <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
-                      {user.name.split(' ').map((s: string) => s[0].toUpperCase()).slice(0, 2).join('')}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ) : (
-              <Link to="/login">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="w-9 h-9 rounded-full"
-                >
+            {/* Profile: show image if available; else initials (logged-in) or icon (guest) */}
+            <Link to="/profile">
+              <div className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center hover:opacity-80 transition">
+                {profileImage ? (
+                  <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                ) : isLoggedIn && user ? (
+                  <div className="w-full h-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
+                    {user.name.split(' ').map((s: string) => s[0].toUpperCase()).slice(0, 2).join('')}
+                  </div>
+                ) : (
                   <User
-                    className={` rounded-full ${theme === 'light' ? 'bg-white text-black' : 'bg-[#171A1C] text-white'
-                      }`}
+                    className={` rounded-full ${theme === 'light' ? 'bg-white text-black' : 'bg-[#171A1C] text-white'}`}
                   />
-                </Button>
-              </Link>
-
-            )}
+                )}
+              </div>
+            </Link>
 
             {/* Hamburger icon for mobile */}
             <button
