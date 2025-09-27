@@ -15,11 +15,11 @@ export interface Manga {
 }
 
 export interface HistoryItem {
-  id: string;
-  title: string;
+  mangaId: string;
+  mangaTitle: string;
   chapter: number;
-  cover: string;
-  lastRead: number;
+  mangaCover: string;
+  lastRead: string;
 }
 
 

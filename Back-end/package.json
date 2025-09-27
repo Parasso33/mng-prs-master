@@ -1,14 +1,9 @@
 {
   "name": "backendtutorial",
-  "version": 2,
-  "builds": [
-    {
-      "src": "index.js",
-      "use": "@now/node"
-    }
-  ],
+  "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "nodemon app.js",
     "start": "nodemon app.js"
   },
   "dependencies": {
@@ -17,7 +12,7 @@
     "body-parser": "^1.20.2",
     "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.6.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.10.0",

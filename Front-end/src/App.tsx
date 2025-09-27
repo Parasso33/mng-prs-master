@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
 import Browse from "@/pages/Browse";
 import Login from "@/pages/Login";
+import Register from "@/pages/Register";
 import Popular from "@/pages/Popular";
 import Latest from "@/pages/Latest";
 import MangaDetails from "@/pages/MangaDetails";
@@ -36,6 +37,7 @@ const App = () => (
                   <Route path="/" element={<Home />} />
                   <Route path="/browse" element={<Browse />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
                   <Route path="/popular" element={<Popular />} />
                   <Route path="/latest" element={<Latest />} />
                   <Route path="/profile" element={<Profile />} />

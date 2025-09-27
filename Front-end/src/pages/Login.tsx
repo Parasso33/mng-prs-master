@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,8 +8,7 @@ import { useApp } from '@/contexts/AppContext';
 import { mangaData } from '@/data/manga';
 import type { Manga } from '@/types/manga';
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
-
-type User = { email: string; name: string };
+import { authService, type User } from '@/services/authService';
 
 const STORAGE_KEY = 'mp_user';
 const SESSION_USER_KEY = 'mp_user';
@@ -25,11 +24,8 @@ const validateEmail = (email: string) => {
 
 const getFavKeyForUser = () => {
   try {
-    const raw = sessionStorage.getItem(SESSION_USER_KEY);
-    if (raw) {
-      const u = JSON.parse(raw);
-      if (u?.email) return `mp_favs_${u.email}`;
-    }
+    const user = authService.getStoredUser();
+    if (user?.email) return `mp_favs_${user.email}`;
   } catch {
     /* ignore */
   }
@@ -57,17 +53,14 @@ const Login: React.FC = () => {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [favoriteMangas, setFavoriteMangas] = useState<Manga[]>([]);
 
-  // load from session on mount
+  // load from storage on mount
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const u: User = JSON.parse(raw);
-        setUser(u);
+    if (authService.isAuthenticated()) {
+      const storedUser = authService.getStoredUser();
+      if (storedUser) {
+        setUser(storedUser);
         setIsLoggedIn?.(true);
       }
-    } catch {
-      // ignore
     }
   }, [setIsLoggedIn]);
 
@@ -89,7 +82,7 @@ const Login: React.FC = () => {
   }, [loadFavorites]);
 
   const persistUser = (u: User) => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(u));
+    // The auth service already handles storing user data
     setUser(u);
     setIsLoggedIn?.(true);
     // load user favorites after login
@@ -97,7 +90,7 @@ const Login: React.FC = () => {
   };
 
   const clearUser = () => {
-    sessionStorage.removeItem(STORAGE_KEY);
+    // The auth service logout already clears storage
     setUser(null);
     setIsLoggedIn?.(false);
     setFavoriteIds([]);
@@ -108,48 +101,65 @@ const Login: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!validateEmail(email)) {
-      toast({
-        variant: 'destructive',
-        title: 'خطأ',
-        description: 'المرجو إدخال بريد إلكتروني صحيح',
-      });
-      setIsLoading(false);
-      return;
-    }
+    try {
+      if (!validateEmail(email)) {
+        toast({
+          variant: 'destructive',
+          title: 'خطأ',
+          description: 'المرجو إدخال بريد إلكتروني صحيح',
+        });
+        setIsLoading(false);
+        return;
+      }
 
-    if (password.length < 6) {
-      toast({
-        variant: 'destructive',
-        title: 'خطأ',
-        description: 'كلمة السر يجب أن تكون 6 أحرف على الأقل',
-      });
-      setIsLoading(false);
-      return;
-    }
+      if (password.length < 6) {
+        toast({
+          variant: 'destructive',
+          title: 'خطأ',
+          description: 'كلمة السر يجب أن تكون 6 أحرف على الأقل',
+        });
+        setIsLoading(false);
+        return;
+      }
 
-    // simulate auth
-    setTimeout(() => {
-      const name = getNameFromEmail(email);
-      const u: User = { email, name };
-      persistUser(u);
+      // Call backend API for login
+      const { user } = await authService.login({
+        email: email.toLowerCase().trim(),
+        password
+      });
+
+      persistUser(user);
 
       toast({
         title: 'تم تسجيل الدخول بنجاح!',
-        description: `مرحباً ${name}`,
+        description: `مرحباً ${user.name}`,
       });
 
-      setIsLoading(false);
       navigate('/');
-    }, 800);
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'خطأ في تسجيل الدخول',
+        description: error.message || 'بيانات الدخول غير صحيحة',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleLogout = () => {
-    clearUser();
-    toast({
-      title: 'تم تسجيل الخروج',
-    });
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      clearUser();
+      toast({
+        title: 'تم تسجيل الخروج',
+      });
+      navigate('/');
+    } catch (error) {
+      // Even if logout fails, clear local state
+      clearUser();
+      navigate('/');
+    }
   };
 
   // If user in session — show profile instead of login form
@@ -283,7 +293,19 @@ const Login: React.FC = () => {
             </div>
           </form>
 
-          <div className="mt-6 text-center text-muted-foreground text-sm">
+          <div className="mt-6 text-center">
+            <p className="text-muted-foreground text-sm">
+              ليس لديك حساب؟{' '}
+              <Link 
+                to="/register" 
+                className="text-primary hover:underline font-medium"
+              >
+                إنشاء حساب جديد
+              </Link>
+            </p>
+          </div>
+
+          <div className="mt-4 text-center text-muted-foreground text-sm">
             <p>للتجربة: استخدم أي بريد إلكتروني وكلمة مرور من 6 أحرف على الأقل</p>
           </div>
         </div>

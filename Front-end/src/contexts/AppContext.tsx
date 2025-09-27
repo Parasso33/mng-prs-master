@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Language, Translation } from '@/types/manga';
 import { translations } from '@/data/translations';
+import { authService } from '@/services/authService';
 
 interface AppContextType {
   language: Language;
@@ -31,6 +32,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentLang, setCurrentLang] = useState<'ar' | 'fr'>('ar');
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Initialize authentication state on app start
+  useEffect(() => {
+    const isAuthenticated = authService.isAuthenticated();
+    setIsLoggedIn(isAuthenticated);
+  }, []);
 
   const language = languages[currentLang];
   const translation = translations[currentLang];
