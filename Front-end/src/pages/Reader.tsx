@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useApp } from "@/contexts/AppContext";
 import { FaArrowRight } from 'react-icons/fa';
 import { FaArrowLeft } from "react-icons/fa";
+import type { HistoryItem } from "@/types/manga";
 
 const Reader: React.FC = () => {
   const { mangaId, chapterId } = useParams<{ mangaId: string; chapterId: string }>();
@@ -48,23 +49,19 @@ const Reader: React.FC = () => {
     if (chapterId) fetchPages();
   }, [chapterId]);
 
-  // Fetch manga feed to determine previous/next chapter IDs
   useEffect(() => {
     const fetchChapterNav = async () => {
       try {
         if (!mangaId || !chapterId) return;
 
-        // Paginate through the feed (in ascending order) until we find the current chapter
         const pageSize = 100;
         let offset = 0;
         let total = Infinity;
         type Chap = { id: string; chapterNum: number | null; createdAt: string };
-        let allChapters: Chap[] = [];
-        let foundIndex: number = -1;
-        let safetyCounter = 0;
+        const allChapters: Chap[] = [];
         const seen = new Set<string>();
 
-        while (offset < total && safetyCounter < 20 && foundIndex === -1) { // cap ~2000 items
+        while (offset < total && allChapters.length < 2000) {
           const res = await axios.get(`https://api.mangadex.org/manga/${mangaId}/feed`, {
             params: {
               limit: pageSize,
@@ -75,7 +72,7 @@ const Reader: React.FC = () => {
           });
 
           const items: Array<{ id: string; attributes: { chapter: string | null; createdAt: string } } & any> = res.data?.data || [];
-          total = typeof res.data?.total === 'number' ? res.data.total : items.length; // fallback
+          total = typeof res.data?.total === 'number' ? res.data.total : items.length;
           for (const item of items) {
             if (!seen.has(item.id)) {
               seen.add(item.id);
@@ -86,61 +83,42 @@ const Reader: React.FC = () => {
           }
 
           offset += pageSize;
-          safetyCounter += 1;
         }
 
-        // Group by distinct chapter numbers (to avoid navigating between different versions of the same chapter)
         type ChapterGroup = { key: string; chapterNum: number | null; items: Chap[] };
         const groupsMap = new Map<string, ChapterGroup>();
         for (const chap of allChapters) {
-          const key = chap.chapterNum !== null ? `num:${chap.chapterNum}` : `null:${chap.createdAt}`; // nulls treated uniquely by time
+          const key = chap.chapterNum !== null ? `num:${chap.chapterNum}` : `null:${chap.createdAt}`;
           if (!groupsMap.has(key)) {
             groupsMap.set(key, { key, chapterNum: chap.chapterNum, items: [] });
           }
           groupsMap.get(key)!.items.push(chap);
         }
 
-        // Sort items within groups by createdAt
         for (const g of groupsMap.values()) {
           g.items.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
         }
 
-        // Build ordered groups: numeric chapters ascending, then null chapters by createdAt of their first item
         const groups = Array.from(groupsMap.values()).sort((a, b) => {
-          if (a.chapterNum !== null && b.chapterNum !== null) {
-            return a.chapterNum - b.chapterNum;
-          }
+          if (a.chapterNum !== null && b.chapterNum !== null) return a.chapterNum - b.chapterNum;
           if (a.chapterNum !== null) return -1;
           if (b.chapterNum !== null) return 1;
           return a.items[0].createdAt.localeCompare(b.items[0].createdAt);
         });
 
-        // Find the group that contains the current chapter id
         const currentGroupIndex = groups.findIndex(g => g.items.some(it => it.id === chapterId));
-
         if (currentGroupIndex !== -1) {
           const prevGroup = currentGroupIndex > 0 ? groups[currentGroupIndex - 1] : null;
           const nextGroup = currentGroupIndex < groups.length - 1 ? groups[currentGroupIndex + 1] : null;
-
-          // Choose a representative id from each neighboring group (first item by createdAt)
           const prevId = prevGroup ? prevGroup.items[0].id : null;
           const nextId = nextGroup ? nextGroup.items[0].id : null;
-
           setPrevChapterId(prevId);
           setNextChapterId(nextId);
-          console.debug('[Reader] Chapter neighbors (by chapter number groups)', {
-            chapterId,
-            prev: prevId,
-            next: nextId,
-            groupsCount: groups.length,
-          });
         } else {
-          console.warn('[Reader] Current chapter not found in grouped list', { chapterId, groups: groups.length });
           setPrevChapterId(null);
           setNextChapterId(null);
         }
       } catch (e) {
-        console.warn('Failed to fetch chapter navigation', e);
         setPrevChapterId(null);
         setNextChapterId(null);
       }
@@ -170,27 +148,27 @@ const Reader: React.FC = () => {
         const chapterNumber = ch?.attributes?.chapter ? Number(ch.attributes.chapter) : 0;
         setChapterNum(Number.isFinite(chapterNumber) ? chapterNumber : null);
 
-        // Read existing history and upsert this entry (dedupe by id+chapter)
-        let history: any[] = [];
+        // Read existing history and upsert this entry (dedupe by mangaId+chapter)
+        let history: HistoryItem[] = [];
         try {
-          history = JSON.parse(localStorage.getItem('mp_history') || '[]');
+          history = JSON.parse(localStorage.getItem('mp_history') || '[]') as HistoryItem[];
         } catch {
           history = [];
         }
 
-        const newItem = {
-          id: mangaId,
-          title,
+        const newItem: HistoryItem = {
+          mangaId: mangaId,
+          mangaTitle: title,
           chapter: chapterNumber,
-          cover,
-          lastRead: Date.now(),
+          mangaCover: cover,
+          lastRead: new Date().toISOString(),
         };
 
-        const filtered = history.filter((h) => !(h?.id === newItem.id && h?.chapter === newItem.chapter));
-        const next = [newItem, ...filtered].slice(0, 500); // keep a reasonable cap
+        const filtered = history.filter((h) => !(h.mangaId === newItem.mangaId && h.chapter === newItem.chapter));
+        const next = [newItem, ...filtered].slice(0, 500);
         localStorage.setItem('mp_history', JSON.stringify(next));
       } catch (e) {
-        console.warn('[Reader] Failed to record history', e);
+        // ignore history failures
       }
     };
 
@@ -199,14 +177,12 @@ const Reader: React.FC = () => {
 
   const handleNextChapter = () => {
     if (mangaId && nextChapterId && nextChapterId !== chapterId) {
-      console.debug('[Reader] Navigate next', { mangaId, nextChapterId });
       navigate(`/reader/${mangaId}/${nextChapterId}`);
     }
   };
 
   const handlePreviousChapter = () => {
     if (mangaId && prevChapterId && prevChapterId !== chapterId) {
-      console.debug('[Reader] Navigate prev', { mangaId, prevChapterId });
       navigate(`/reader/${mangaId}/${prevChapterId}`);
     }
   };

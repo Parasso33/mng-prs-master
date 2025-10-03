@@ -109,21 +109,19 @@ const Header: React.FC = () => {
               <i className={`fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} />
             </Button>
 
-            {/* Profile: show image if available; else initials (logged-in) or icon (guest) */}
-            <Link to="/profile">
-              <div className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center hover:opacity-80 transition">
-                {profileImage ? (
-                  <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+            {/* Profile: styled like other outline buttons, but shows avatar if available */}
+            <Link to="/profile" aria-label="Open profile">
+              <Button variant="outline" size="icon" className="w-9 h-9 rounded-full p-0 overflow-hidden">
+                {isLoggedIn && profileImage ? (
+                  <img src={profileImage} alt="Profile" className="w-9 h-9 object-cover rounded-full" />
                 ) : isLoggedIn && user ? (
-                  <div className="w-full h-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
+                  <div className="w-9 h-9 bg-primary/10 text-primary flex items-center justify-center font-semibold rounded-full">
                     {user.name.split(' ').map((s: string) => s[0].toUpperCase()).slice(0, 2).join('')}
                   </div>
                 ) : (
-                  <User
-                    className={` rounded-full ${theme === 'light' ? 'bg-white text-black' : 'bg-[#171A1C] text-white'}`}
-                  />
+                  <User className="w-5 h-5 text-foreground" />
                 )}
-              </div>
+              </Button>
             </Link>
 
             {/* Hamburger icon for mobile */}

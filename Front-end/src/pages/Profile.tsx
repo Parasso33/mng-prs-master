@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bookmark, Clock, Settings, User as UserIcon, Plus } from 'lucide-react';
 import MangaCard from '@/components/MangaCard';
 // import { mangaData } from '@/data/manga';
@@ -8,6 +8,7 @@ import FavButton from '@/components/ui/FavButton';
 import LoadingSpinner from '@/components/LoadingSpinner';
 // Front-end only: no backend/auth imports
 import { useProfile } from '@/contexts/ProfileContext';
+import { useApp } from '@/contexts/AppContext';
 
 
 // Front-end only storage keys
@@ -24,6 +25,8 @@ const Profile: React.FC = () => {
   const { profileImage, setProfileImage } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
+  const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn } = useApp();
 
   // Load user profile from localStorage (front-end only)
   const loadUser = useCallback(() => {
@@ -184,13 +187,18 @@ const Profile: React.FC = () => {
     .join('');
 
   const handleLogout = () => {
-    // Front-end only: clear local user data
+    // Front-end only: clear local user data and redirect to login
     try {
       localStorage.removeItem(USER_DATA_KEY);
+      sessionStorage.removeItem('mp_user');
+      localStorage.removeItem(PROFILE_IMAGE_KEY);
     } catch {
-      // ignore
     }
+    try { setProfileImage(null); } catch {}
+    setIsLoggedIn(false);
+    try { window.dispatchEvent(new CustomEvent('mp:auth:changed', { detail: { user: null, action: 'logout' } })); } catch {}
     loadUser();
+    navigate('/login', { replace: true });
   };
 
   const removeFavorite = (id: string) => {
@@ -237,7 +245,24 @@ const Profile: React.FC = () => {
     setIsEditing(false);
   };
 
-  // Front-end only: no loading/auth gating
+  // If not logged in: show prompt to login/register
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-8">
+        <div className="max-w-xl w-full text-center bg-white/80 dark:bg-gray-800/75 rounded-lg shadow p-8">
+          <p className="mb-6 text-lg text-muted-foreground">يرجى تسجيل الدخول للوصول للملف الشخصي.</p>
+          <div className="flex items-center justify-center gap-3">
+            <Link to="/login" className="px-4 py-2 bg-primary text-white rounded hover:opacity-90">
+              تسجيل الدخول
+            </Link>
+            <Link to="/register" className="px-4 py-2 bg-[#1D2630] text-white rounded hover:opacity-90">
+              إنشاء حساب
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -257,13 +282,6 @@ const Profile: React.FC = () => {
                 <div className="absolute top-3 right-3 z-20">
                   <FavButton mangaId={m.id} />
                 </div>
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFavorite(m.id); }}
-                  className="absolute top-3 left-3 z-20 w-6 h-6 flex items-center justify-center rounded-full bg-[#ff6633] text-white hover:bg-red-700 text-sm"
-                  title="حذف من المفضلة"
-                >
-                  ×
-                </button>
               </div>
             ))}
           </div>

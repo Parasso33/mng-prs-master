@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 
 const Browse: React.FC = () => {
   const { translation } = useApp();
+  // Blocklist of titles to hide entirely from the browse grid
+  const BLOCKED_TITLES = useMemo(() => new Set(["Kanojo no Tomodachi"]), []);
   const [genreFilter, setGenreFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all'); // 'Ongoing' | 'Completed' | 'متوقف' | 'all'
   const [typeFilter, setTypeFilter] = useState<string>('all'); // 'manga' | 'manhwa' | 'manhua' | 'all'
@@ -62,7 +64,9 @@ const Browse: React.FC = () => {
           };
         });
 
-        setMangas(mapped);
+        // Remove any blocked titles
+        const cleaned = mapped.filter(m => !BLOCKED_TITLES.has(m.title) && !BLOCKED_TITLES.has(m.titleEn));
+        setMangas(cleaned);
       } catch (err) {
         console.error('Error fetching mangas:', err);
       } finally {
@@ -84,6 +88,7 @@ const Browse: React.FC = () => {
   // Filter mangas
   const filteredMangas = useMemo(() => {
     return mangas.filter(manga => {
+      if (BLOCKED_TITLES.has(manga.title) || BLOCKED_TITLES.has(manga.titleEn)) return false;
       const matchesGenre = genreFilter === 'all' || manga.categories.includes(genreFilter);
       const matchesStatus = statusFilter === 'all' || manga.status === statusFilter;
       const matchesType = typeFilter === 'all' || manga.type === typeFilter;
